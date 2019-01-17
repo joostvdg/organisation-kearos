@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SA=~/.gke_sa.json
-HELM_VERSION=2.10.0
+HELM_VERSION=2.12.2
 
 function install_dependencies() {
 	wget https://github.com/jenkins-x/jx/releases/download/v${JX_VERSION}/jx-linux-amd64.tar.gz
@@ -41,10 +41,10 @@ function apply() {
 	
 	if [[ "${CI_BRANCH}" == "master" ]]; then
 		echo "Running master build"
-		./jx create terraform --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA}
+		./jx create terraform --skip-login --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA}
 	else
 		echo "Running PR build for ${CI_BRANCH}"
-		./jx create terraform --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA} --skip-terraform-apply --local-organisation-repository .
+		./jx create terraform --skip-login --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA} --skip-terraform-apply --local-organisation-repository .
 	fi
 }
 
