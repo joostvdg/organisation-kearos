@@ -25,6 +25,23 @@ function configure_environment() {
 	echo ${GKE_SA_JSON} > ${SA}
 	git config --global --add user.name "${GIT_USER}"
 	git config --global --add user.email "${GIT_EMAIL}"
+
+	cat <<EOF > ~/.jx/gitAuth.yaml
+---
+servers:
+- url: https://github.com
+  users:
+  - username: ${GIT_USERNAME}
+    apitoken: ${GIT_API_TOKEN}
+    bearertoken: ""
+  name: GitHub
+  kind: github
+  currentuser: ${GIT_USERNAME}
+defaultusername: ${GIT_USERNAME}
+currentserver: https://github.com
+pipelineusername: ${GIT_USERNAME}
+pipelineserver: https://github.com
+EOF
 }
 
 function apply() {
@@ -41,10 +58,22 @@ function apply() {
 	
 	if [[ "${CI_BRANCH}" == "master" ]]; then
 		echo "Running master build"
-		./jx create terraform --skip-login --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA}
+		./jx create terraform \
+			--skip-login \
+			--verbose ${CLUSTER_COMMAND} \
+			-b --install-dependencies \
+			-o ${ORG} \
+			--gke-service-account ${SA}
 	else
 		echo "Running PR build for ${CI_BRANCH}"
-		./jx create terraform --skip-login --verbose ${CLUSTER_COMMAND} -b --install-dependencies -o ${ORG} --gke-service-account ${SA} --skip-terraform-apply --local-organisation-repository .
+		./jx create terraform \
+			--skip-login \
+			--verbose ${CLUSTER_COMMAND} \
+			-b --install-dependencies \
+			-o ${ORG} \
+			--gke-service-account ${SA} \
+			--skip-terraform-apply \
+			--local-organisation-repository .
 	fi
 }
 
