@@ -1,0 +1,6 @@
+name: cbc-env
+version: 0.0.1
+description: Joostvdg CBC
+maintainers:
+  - name: Joost van der Griendt
+icon: https://www.cloudbees.com/sites/default/files/Jenkins_8.png
